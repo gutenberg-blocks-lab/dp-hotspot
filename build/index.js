@@ -5254,6 +5254,7 @@ function HotspotPoint({
     transition
   };
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "hotspotPoint",
     ref: setNodeRef,
     style: finalStyle,
     ...attributes,

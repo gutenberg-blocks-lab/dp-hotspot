@@ -47,7 +47,13 @@ function HotspotPoint({ id, style }) {
     };
 
     return (
-        <div ref={setNodeRef} style={finalStyle} {...attributes} {...listeners}>
+        <div
+            className="hotspotPoint"
+            ref={setNodeRef}
+            style={finalStyle}
+            {...attributes}
+            {...listeners}
+        >
             {id + 1} {/* Add 1 to id here */}
         </div>
     );
