@@ -61,6 +61,7 @@ function HotspotPoint({ id, style }) {
 
 
 
+
 export default function Edit({ attributes, setAttributes }) {
 
      const { hotspotNumbers } = attributes;
