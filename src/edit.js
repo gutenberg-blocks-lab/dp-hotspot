@@ -1,5 +1,22 @@
 // Edit.js
 
+import React from "react";
+import {
+    useDroppable,
+    DndContext,
+    useDraggable,
+    closestCorners,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+} from "@dnd-kit/core";
+
+import {
+    SortableContext,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+
 import { __ } from "@wordpress/i18n";
 import {
     useBlockProps,
@@ -14,8 +31,59 @@ import {
 } from "@wordpress/components";
 import "./editor.scss";
 
+
+function HotspotPoint({ id, style }) {
+    const { attributes, listeners, setNodeRef, transform, transition } =
+        useDraggable({
+            id: id.toString(),
+        });
+
+    const finalStyle = {
+        ...style,
+        transform: transform
+            ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
+            : "",
+        transition,
+    };
+
+    return (
+        <div ref={setNodeRef} style={finalStyle} {...attributes} {...listeners}>
+            {id}
+        </div>
+    );
+}
+
+
 export default function Edit({ attributes, setAttributes }) {
-    const { hotspotNumbers } = attributes;
+
+     const { hotspotNumbers } = attributes;
+     const sensors = useSensors(
+         useSensor(PointerSensor),
+         useSensor(KeyboardSensor)
+     );
+
+     const handleDragEnd = (event) => {
+         const { active, over } = event;
+
+         if (active.id !== over.id) {
+             const oldIndex = hotspotNumbers.findIndex(
+                 (hotspot) => hotspot.id === active.id
+             );
+             const newIndex = hotspotNumbers.findIndex(
+                 (hotspot) => hotspot.id === over.id
+             );
+
+             // Update the order of hotspots
+             const newHotspotNumbers = [...hotspotNumbers];
+             newHotspotNumbers.splice(
+                 newIndex,
+                 0,
+                 newHotspotNumbers.splice(oldIndex, 1)[0]
+             );
+             setAttributes({ hotspotNumbers: newHotspotNumbers });
+         }
+     };
+
 
     const addHotspotNumber = () => {
         const newHotspotNumber = { bottom: 0, left: 0 };
@@ -83,19 +151,28 @@ export default function Edit({ attributes, setAttributes }) {
             </InspectorControls>
             <div {...useBlockProps()}>
                 <InnerBlocks />
-                {hotspotNumbers.map((item, index) => (
-                    <div
-                        className="hotspotPoint"
-                        key={index}
-                        style={{
-                            position: "absolute",
-                            bottom: `${item.bottom}%`,
-                            left: `${item.left}%`,
-                        }}
+                <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCorners}
+                    onDragEnd={handleDragEnd}
+                >
+                    <SortableContext
+                        items={hotspotNumbers}
+                        strategy={verticalListSortingStrategy}
                     >
-                        {index + 1}
-                    </div>
-                ))}
+                        {hotspotNumbers.map((hotspot, index) => (
+                            <HotspotPoint
+                                key={index}
+                                id={index}
+                                style={{
+                                    position: "absolute",
+                                    bottom: `${hotspot.bottom}%`,
+                                    left: `${hotspot.left}%`,
+                                }}
+                            />
+                        ))}
+                    </SortableContext>
+                </DndContext>
             </div>
         </>
     );
