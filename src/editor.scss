@@ -5,9 +5,7 @@
  */
 
 .wp-block-create-block-hotspot{
-	border: 1px dotted #f00;
-	aspect-ratio: 16/9;
-	height: auto;
+	min-height: 3rem;
 }
 
 .hotspotPoint{

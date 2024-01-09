@@ -1,5 +1,11 @@
+// Edit.js
+
 import { __ } from "@wordpress/i18n";
-import { useBlockProps, InspectorControls } from "@wordpress/block-editor";
+import {
+    useBlockProps,
+    InspectorControls,
+    InnerBlocks,
+} from "@wordpress/block-editor";
 import {
     PanelBody,
     __experimentalNumberControl as NumberControl,
@@ -76,7 +82,7 @@ export default function Edit({ attributes, setAttributes }) {
                 </PanelBody>
             </InspectorControls>
             <div {...useBlockProps()}>
-                {__("Dp Hotspot – hello from the editor!", "dp-hotspot")}
+                <InnerBlocks />
                 {hotspotNumbers.map((item, index) => (
                     <div
                         className="hotspotPoint"
