@@ -48,10 +48,11 @@ function HotspotPoint({ id, style }) {
 
     return (
         <div ref={setNodeRef} style={finalStyle} {...attributes} {...listeners}>
-            {id}
+            {id + 1} {/* Add 1 to id here */}
         </div>
     );
 }
+
 
 
 export default function Edit({ attributes, setAttributes }) {
@@ -65,7 +66,8 @@ export default function Edit({ attributes, setAttributes }) {
      const handleDragEnd = (event) => {
          const { active, over } = event;
 
-         if (active.id !== over.id) {
+         // Check if the draggable item is dropped over a valid target
+         if (over && active.id !== over.id) {
              const oldIndex = hotspotNumbers.findIndex(
                  (hotspot) => hotspot.id === active.id
              );
@@ -83,6 +85,7 @@ export default function Edit({ attributes, setAttributes }) {
              setAttributes({ hotspotNumbers: newHotspotNumbers });
          }
      };
+
 
 
     const addHotspotNumber = () => {

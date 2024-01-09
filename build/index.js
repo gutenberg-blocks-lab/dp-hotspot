@@ -5258,7 +5258,7 @@ function HotspotPoint({
     style: finalStyle,
     ...attributes,
     ...listeners
-  }, id);
+  }, id + 1, " ");
 }
 function Edit({
   attributes,
@@ -5273,7 +5273,9 @@ function Edit({
       active,
       over
     } = event;
-    if (active.id !== over.id) {
+
+    // Check if the draggable item is dropped over a valid target
+    if (over && active.id !== over.id) {
       const oldIndex = hotspotNumbers.findIndex(hotspot => hotspot.id === active.id);
       const newIndex = hotspotNumbers.findIndex(hotspot => hotspot.id === over.id);
 
