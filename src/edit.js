@@ -31,17 +31,19 @@ import {
 } from "@wordpress/components";
 import "./editor.scss";
 
-
-function HotspotPoint({ id, bottom, left }) {
-    const { attributes, listeners, setNodeRef } = useDraggable({
+function HotspotPoint({ id, style }) {
+    const { attributes, listeners, setNodeRef, transform } = useDraggable({
         id: id.toString(),
     });
 
-    const finalStyle = {
-        position: "absolute",
-        bottom: `${bottom}%`,
-        left: `${left}%`,
-    };
+    // Check if transform is not null before accessing its properties
+    const finalStyle = transform
+        ? {
+              ...style,
+              left: `${transform.x}px`, // Replace with percentage if needed
+              bottom: `${transform.y}px`, // Replace with percentage if needed
+          }
+        : style;
 
     return (
         <div
@@ -51,46 +53,41 @@ function HotspotPoint({ id, bottom, left }) {
             {...attributes}
             {...listeners}
         >
-            {id + 1}
+            {id + 1} {/* Add 1 to id here */}
         </div>
     );
 }
 
 
-
-
 export default function Edit({ attributes, setAttributes }) {
+    const { hotspotNumbers } = attributes;
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor)
+    );
 
-     const { hotspotNumbers } = attributes;
-     const sensors = useSensors(
-         useSensor(PointerSensor),
-         useSensor(KeyboardSensor)
-     );
+    const handleDragEnd = (event) => {
+        const { active, over } = event;
 
-     const handleDragEnd = (event) => {
-         const { active, over } = event;
+        // Check if the draggable item is dropped over a valid target
+        if (over && active.id !== over.id) {
+            const oldIndex = hotspotNumbers.findIndex(
+                (hotspot) => hotspot.id === active.id
+            );
+            const newIndex = hotspotNumbers.findIndex(
+                (hotspot) => hotspot.id === over.id
+            );
 
-         // Check if the draggable item is dropped over a valid target
-         if (over && active.id !== over.id) {
-             const oldIndex = hotspotNumbers.findIndex(
-                 (hotspot) => hotspot.id === active.id
-             );
-             const newIndex = hotspotNumbers.findIndex(
-                 (hotspot) => hotspot.id === over.id
-             );
-
-             // Update the order of hotspots
-             const newHotspotNumbers = [...hotspotNumbers];
-             newHotspotNumbers.splice(
-                 newIndex,
-                 0,
-                 newHotspotNumbers.splice(oldIndex, 1)[0]
-             );
-             setAttributes({ hotspotNumbers: newHotspotNumbers });
-         }
-     };
-
-
+            // Update the order of hotspots
+            const newHotspotNumbers = [...hotspotNumbers];
+            newHotspotNumbers.splice(
+                newIndex,
+                0,
+                newHotspotNumbers.splice(oldIndex, 1)[0]
+            );
+            setAttributes({ hotspotNumbers: newHotspotNumbers });
+        }
+    };
 
     const addHotspotNumber = () => {
         const newHotspotNumber = { bottom: 0, left: 0 };

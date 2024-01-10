@@ -5237,28 +5237,31 @@ __webpack_require__.r(__webpack_exports__);
 
 function HotspotPoint({
   id,
-  bottom,
-  left
+  style
 }) {
   const {
     attributes,
     listeners,
-    setNodeRef
+    setNodeRef,
+    transform
   } = (0,_dnd_kit_core__WEBPACK_IMPORTED_MODULE_1__.useDraggable)({
     id: id.toString()
   });
-  const finalStyle = {
-    position: "absolute",
-    bottom: `${bottom}%`,
-    left: `${left}%`
-  };
+
+  // Check if transform is not null before accessing its properties
+  const finalStyle = transform ? {
+    ...style,
+    left: `${transform.x}px`,
+    // Replace with percentage if needed
+    bottom: `${transform.y}px` // Replace with percentage if needed
+  } : style;
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "hotspotPoint",
     ref: setNodeRef,
     style: finalStyle,
     ...attributes,
     ...listeners
-  }, id + 1);
+  }, id + 1, " ");
 }
 function Edit({
   attributes,
