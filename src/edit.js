@@ -1,6 +1,6 @@
 // Edit.js
 
-import React from "react";
+import React, { useRef } from "react";
 import {
     useDroppable,
     DndContext,
@@ -31,19 +31,26 @@ import {
 } from "@wordpress/components";
 import "./editor.scss";
 
-function HotspotPoint({ id, style }) {
+function HotspotPoint({ id, style, containerRef }) {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
         id: id.toString(),
     });
 
-    // Check if transform is not null before accessing its properties
-    const finalStyle = transform
-        ? {
-              ...style,
-              left: `${transform.x}px`, // Replace with percentage if needed
-              bottom: `${transform.y}px`, // Replace with percentage if needed
-          }
-        : style;
+    let finalStyle = style;
+    if (transform && containerRef.current) {
+        const containerWidth = containerRef.current.offsetWidth;
+        const containerHeight = containerRef.current.offsetHeight;
+
+        const leftPercentage = (transform.x / containerWidth) * 100;
+        const bottomFromTop = (transform.y / containerHeight) * 100;
+        const bottomPercentage = 100 - bottomFromTop; // Calculate from the bottom
+
+        finalStyle = {
+            ...style,
+            left: `${leftPercentage}%`,
+            bottom: `${bottomPercentage}%`,
+        };
+    }
 
     return (
         <div
@@ -53,10 +60,11 @@ function HotspotPoint({ id, style }) {
             {...attributes}
             {...listeners}
         >
-            {id + 1} {/* Add 1 to id here */}
+            {id + 1}
         </div>
     );
 }
+
 
 
 export default function Edit({ attributes, setAttributes }) {
@@ -109,6 +117,8 @@ export default function Edit({ attributes, setAttributes }) {
         const updatedItems = hotspotNumbers.filter((_, i) => i !== index);
         setAttributes({ hotspotNumbers: updatedItems });
     };
+    
+    const containerRef = useRef(null); // Ref for the container
 
     return (
         <>
@@ -153,7 +163,7 @@ export default function Edit({ attributes, setAttributes }) {
                     </Button>
                 </PanelBody>
             </InspectorControls>
-            <div {...useBlockProps()}>
+            <div {...useBlockProps()} ref={containerRef}>
                 <InnerBlocks />
                 <DndContext
                     sensors={sensors}
@@ -168,6 +178,7 @@ export default function Edit({ attributes, setAttributes }) {
                             <HotspotPoint
                                 key={index}
                                 id={index}
+                                containerRef={containerRef} 
                                 style={{
                                     position: "absolute",
                                     bottom: `${hotspot.bottom}%`,
