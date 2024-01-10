@@ -75,25 +75,26 @@ export default function Edit({ attributes, setAttributes }) {
     );
 
     const handleDragEnd = (event) => {
-        const { active, over } = event;
+        const activeIndex = hotspotNumbers.findIndex(
+            (hotspot) => hotspot.id === active.id
+        );
+        if (containerRef.current && active.transform) {
+            const containerWidth = containerRef.current.offsetWidth;
+            const containerHeight = containerRef.current.offsetHeight;
 
-        // Check if the draggable item is dropped over a valid target
-        if (over && active.id !== over.id) {
-            const oldIndex = hotspotNumbers.findIndex(
-                (hotspot) => hotspot.id === active.id
-            );
-            const newIndex = hotspotNumbers.findIndex(
-                (hotspot) => hotspot.id === over.id
-            );
+            const leftPercentage = (active.transform.x / containerWidth) * 100;
+            const bottomFromTop = (active.transform.y / containerHeight) * 100;
+            const bottomPercentage = 100 - bottomFromTop;
 
-            // Update the order of hotspots
-            const newHotspotNumbers = [...hotspotNumbers];
-            newHotspotNumbers.splice(
-                newIndex,
-                0,
-                newHotspotNumbers.splice(oldIndex, 1)[0]
-            );
-            setAttributes({ hotspotNumbers: newHotspotNumbers });
+            // Create a copy of the hotspotNumbers and update the active hotspot
+            const updatedHotspots = [...hotspotNumbers];
+            updatedHotspots[activeIndex] = {
+                ...updatedHotspots[activeIndex],
+                left: leftPercentage,
+                bottom: bottomPercentage,
+            };
+
+            setAttributes({ hotspotNumbers: updatedHotspots });
         }
     };
 
