@@ -5237,21 +5237,20 @@ __webpack_require__.r(__webpack_exports__);
 
 function HotspotPoint({
   id,
-  style
+  bottom,
+  left
 }) {
   const {
     attributes,
     listeners,
-    setNodeRef,
-    transform,
-    transition
+    setNodeRef
   } = (0,_dnd_kit_core__WEBPACK_IMPORTED_MODULE_1__.useDraggable)({
     id: id.toString()
   });
   const finalStyle = {
-    ...style,
-    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : "",
-    transition
+    position: "absolute",
+    bottom: `${bottom}%`,
+    left: `${left}%`
   };
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "hotspotPoint",
@@ -5259,7 +5258,7 @@ function HotspotPoint({
     style: finalStyle,
     ...attributes,
     ...listeners
-  }, id + 1, " ");
+  }, id + 1);
 }
 function Edit({
   attributes,

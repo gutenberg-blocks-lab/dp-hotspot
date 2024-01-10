@@ -32,18 +32,15 @@ import {
 import "./editor.scss";
 
 
-function HotspotPoint({ id, style }) {
-    const { attributes, listeners, setNodeRef, transform, transition } =
-        useDraggable({
-            id: id.toString(),
-        });
+function HotspotPoint({ id, bottom, left }) {
+    const { attributes, listeners, setNodeRef } = useDraggable({
+        id: id.toString(),
+    });
 
     const finalStyle = {
-        ...style,
-        transform: transform
-            ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
-            : "",
-        transition,
+        position: "absolute",
+        bottom: `${bottom}%`,
+        left: `${left}%`,
     };
 
     return (
@@ -54,7 +51,7 @@ function HotspotPoint({ id, style }) {
             {...attributes}
             {...listeners}
         >
-            {id + 1} {/* Add 1 to id here */}
+            {id + 1}
         </div>
     );
 }
