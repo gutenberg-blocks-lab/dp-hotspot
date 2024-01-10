@@ -75,6 +75,26 @@ export default function Edit({ attributes, setAttributes }) {
     );
 
     const handleDragEnd = (event) => {
+        const { active, over } = event;
+
+        if (over && active.id !== over.id) {
+            const oldIndex = hotspotNumbers.findIndex(
+                (hotspot) => hotspot.id === active.id
+            );
+            const newIndex = hotspotNumbers.findIndex(
+                (hotspot) => hotspot.id === over.id
+            );
+
+            const newHotspotNumbers = [...hotspotNumbers];
+            newHotspotNumbers.splice(
+                newIndex,
+                0,
+                newHotspotNumbers.splice(oldIndex, 1)[0]
+            );
+            setAttributes({ hotspotNumbers: newHotspotNumbers });
+        }
+
+        // Additional code for updating the positions
         const activeIndex = hotspotNumbers.findIndex(
             (hotspot) => hotspot.id === active.id
         );
@@ -86,7 +106,6 @@ export default function Edit({ attributes, setAttributes }) {
             const bottomFromTop = (active.transform.y / containerHeight) * 100;
             const bottomPercentage = 100 - bottomFromTop;
 
-            // Create a copy of the hotspotNumbers and update the active hotspot
             const updatedHotspots = [...hotspotNumbers];
             updatedHotspots[activeIndex] = {
                 ...updatedHotspots[activeIndex],
@@ -97,6 +116,7 @@ export default function Edit({ attributes, setAttributes }) {
             setAttributes({ hotspotNumbers: updatedHotspots });
         }
     };
+
 
     const addHotspotNumber = () => {
         const newHotspotNumber = { bottom: 0, left: 0 };
