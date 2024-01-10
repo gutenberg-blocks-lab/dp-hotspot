@@ -1,3 +1,22 @@
+// Edit.js
+
+import React from "react";
+import {
+    useDroppable,
+    DndContext,
+    useDraggable,
+    closestCorners,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+} from "@dnd-kit/core";
+
+import {
+    SortableContext,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+
 import { __ } from "@wordpress/i18n";
 import {
     useBlockProps,
@@ -10,13 +29,65 @@ import {
     Flex,
     Button,
 } from "@wordpress/components";
-import { DndContext } from '@dnd-kit/core';
-import DraggableHotspot from './DraggableHotspot'; // You will need to create this component
-
 import "./editor.scss";
+
+function HotspotPoint({ id, style }) {
+    const { attributes, listeners, setNodeRef, transform } = useDraggable({
+        id: id.toString(),
+    });
+
+    // Check if transform is not null before accessing its properties
+    const finalStyle = transform
+        ? {
+              ...style,
+              left: `${transform.x}px`, // Replace with percentage if needed
+              bottom: `${transform.y}px`, // Replace with percentage if needed
+          }
+        : style;
+
+    return (
+        <div
+            className="hotspotPoint"
+            ref={setNodeRef}
+            style={finalStyle}
+            {...attributes}
+            {...listeners}
+        >
+            {id + 1} {/* Add 1 to id here */}
+        </div>
+    );
+}
+
 
 export default function Edit({ attributes, setAttributes }) {
     const { hotspotNumbers } = attributes;
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor)
+    );
+
+    const handleDragEnd = (event) => {
+        const { active, over } = event;
+
+        // Check if the draggable item is dropped over a valid target
+        if (over && active.id !== over.id) {
+            const oldIndex = hotspotNumbers.findIndex(
+                (hotspot) => hotspot.id === active.id
+            );
+            const newIndex = hotspotNumbers.findIndex(
+                (hotspot) => hotspot.id === over.id
+            );
+
+            // Update the order of hotspots
+            const newHotspotNumbers = [...hotspotNumbers];
+            newHotspotNumbers.splice(
+                newIndex,
+                0,
+                newHotspotNumbers.splice(oldIndex, 1)[0]
+            );
+            setAttributes({ hotspotNumbers: newHotspotNumbers });
+        }
+    };
 
     const addHotspotNumber = () => {
         const newHotspotNumber = { bottom: 0, left: 0 };
@@ -38,55 +109,6 @@ export default function Edit({ attributes, setAttributes }) {
         const updatedItems = hotspotNumbers.filter((_, i) => i !== index);
         setAttributes({ hotspotNumbers: updatedItems });
     };
-
-    const handleDragEnd = (event) => {
-        const { active, over } = event;
-
-        if (over && active.id !== over.id) {
-            const activeIndex = parseInt(active.id.replace("hotspot-", ""), 10);
-
-            // Get the container element
-            const container = document.querySelector(
-                ".wp-block-create-block-hotspot"
-            );
-            if (!container) {
-                return; // Container not found
-            }
-
-            const newPosition = calculateNewPosition(event, container);
-
-            // Update the hotspot's position
-            const updatedHotspotNumbers = [...hotspotNumbers];
-            updatedHotspotNumbers[activeIndex] = {
-                ...updatedHotspotNumbers[activeIndex],
-                bottom: newPosition.bottom,
-                left: newPosition.left,
-            };
-
-            setAttributes({ hotspotNumbers: updatedHotspotNumbers });
-        }
-    };
-
-
-    function calculateNewPosition(event, container) {
-        // Get the container's dimensions
-        const { width, height } = container.getBoundingClientRect();
-
-        // Calculate the position of the drag event relative to the container
-        // This is a simplified example. You'll need to adjust this based on how your drag event reports positions
-        const x = event.clientX - container.offsetLeft;
-        const y = event.clientY - container.offsetTop;
-
-        // Convert the position to percentage
-        const leftPercentage = (x / width) * 100;
-        const bottomPercentage = ((height - y) / height) * 100;
-
-        return {
-            left: leftPercentage,
-            bottom: bottomPercentage,
-        };
-    }
-
 
     return (
         <>
@@ -131,20 +153,31 @@ export default function Edit({ attributes, setAttributes }) {
                     </Button>
                 </PanelBody>
             </InspectorControls>
-            <DndContext onDragEnd={handleDragEnd}>
-                <div {...useBlockProps()}>
-                    <InnerBlocks />
-                    {hotspotNumbers.map((item, index) => (
-                        <DraggableHotspot
-                            key={index}
-                            id={index}
-                            bottom={item.bottom}
-                            left={item.left}
-                            className="hotspotPoint"
-                        />
-                    ))}
-                </div>
-            </DndContext>
+            <div {...useBlockProps()}>
+                <InnerBlocks />
+                <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCorners}
+                    onDragEnd={handleDragEnd}
+                >
+                    <SortableContext
+                        items={hotspotNumbers}
+                        strategy={verticalListSortingStrategy}
+                    >
+                        {hotspotNumbers.map((hotspot, index) => (
+                            <HotspotPoint
+                                key={index}
+                                id={index}
+                                style={{
+                                    position: "absolute",
+                                    bottom: `${hotspot.bottom}%`,
+                                    left: `${hotspot.left}%`,
+                                }}
+                            />
+                        ))}
+                    </SortableContext>
+                </DndContext>
+            </div>
         </>
     );
 }

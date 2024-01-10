@@ -5,12 +5,9 @@
  */
 
 .wp-block-create-block-hotspot{
-	min-height: 30px;
-	height: auto;
-	display: flex;
-	outline: 2px solid black;
-	
-	.block-editor-block-list__layout * {
+	min-height: 3rem;
+
+	.block-editor-block-list__layout > *{
 		margin: 0;
 	}
 }
