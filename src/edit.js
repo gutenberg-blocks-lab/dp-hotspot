@@ -32,18 +32,29 @@ import {
 import "./editor.scss";
 
 function HotspotPoint({ id, style, containerRef }) {
+    // Convert percentage to pixels for initial position
+    let initialX = 0,
+        initialY = 0;
+    if (containerRef.current) {
+        const containerWidth = containerRef.current.offsetWidth;
+        const containerHeight = containerRef.current.offsetHeight;
+        initialX = (style.left.replace("%", "") / 100) * containerWidth;
+        initialY =
+            ((100 - style.bottom.replace("%", "")) / 100) * containerHeight;
+    }
+
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
         id: id.toString(),
+        initialTransform: { x: initialX, y: initialY },
     });
 
     let finalStyle = style;
-    if (transform && containerRef.current) {
-        const containerWidth = containerRef.current.offsetWidth;
-        const containerHeight = containerRef.current.offsetHeight;
-
-        const leftPercentage = (transform.x / containerWidth) * 100;
-        const bottomFromTop = (transform.y / containerHeight) * 100;
-        const bottomPercentage = 100 - bottomFromTop; // Calculate from the bottom
+    if (transform) {
+        const leftPercentage =
+            (transform.x / containerRef.current.offsetWidth) * 100;
+        const bottomFromTop =
+            (transform.y / containerRef.current.offsetHeight) * 100;
+        const bottomPercentage = 100 - bottomFromTop;
 
         finalStyle = {
             ...style,
@@ -67,6 +78,7 @@ function HotspotPoint({ id, style, containerRef }) {
 
 
 
+
 export default function Edit({ attributes, setAttributes }) {
     const { hotspotNumbers } = attributes;
     const sensors = useSensors(
@@ -75,47 +87,32 @@ export default function Edit({ attributes, setAttributes }) {
     );
 
     const handleDragEnd = (event) => {
-        const { active, over } = event;
+        const { active, delta } = event;
 
-        if (over && active.id !== over.id) {
-            const oldIndex = hotspotNumbers.findIndex(
-                (hotspot) => hotspot.id === active.id
-            );
-            const newIndex = hotspotNumbers.findIndex(
-                (hotspot) => hotspot.id === over.id
-            );
-
-            const newHotspotNumbers = [...hotspotNumbers];
-            newHotspotNumbers.splice(
-                newIndex,
-                0,
-                newHotspotNumbers.splice(oldIndex, 1)[0]
-            );
-            setAttributes({ hotspotNumbers: newHotspotNumbers });
-        }
-
-        // Additional code for updating the positions
         const activeIndex = hotspotNumbers.findIndex(
             (hotspot) => hotspot.id === active.id
         );
-        if (containerRef.current && active.transform) {
+
+        if (containerRef.current) {
             const containerWidth = containerRef.current.offsetWidth;
             const containerHeight = containerRef.current.offsetHeight;
 
-            const leftPercentage = (active.transform.x / containerWidth) * 100;
-            const bottomFromTop = (active.transform.y / containerHeight) * 100;
-            const bottomPercentage = 100 - bottomFromTop;
+            const leftPercentage =
+                ((active.rect.current.translated.left + delta.x) /
+                    containerWidth) *
+                100;
+            const bottomPercentage =
+                100 -
+                ((active.rect.current.translated.top + delta.y) /
+                    containerHeight) *
+                    100;
 
-            const updatedHotspots = [...hotspotNumbers];
-            updatedHotspots[activeIndex] = {
-                ...updatedHotspots[activeIndex],
-                left: leftPercentage,
-                bottom: bottomPercentage,
-            };
-
-            setAttributes({ hotspotNumbers: updatedHotspots });
+            // Update the hotspot position
+            updateHotspotNumber(activeIndex, "left", leftPercentage);
+            updateHotspotNumber(activeIndex, "bottom", bottomPercentage);
         }
     };
+
 
 
     const addHotspotNumber = () => {
