@@ -6,7 +6,16 @@
  */
 
 .wp-block-create-block-hotspot {
-	background-color: #21759b;
-	color: #fff;
-	padding: 2px;
+	position: relative !important;
+}
+
+.hotspotPoint{
+	background-color: rgb(208, 121, 255);
+	color: white;
+	border-radius: 1000px;
+	width: 30px;
+	height: 30px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
