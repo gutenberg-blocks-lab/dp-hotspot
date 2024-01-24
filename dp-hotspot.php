@@ -18,6 +18,31 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * For plugin to work on multiple installs replace 'UNIQUE_PLUGIN_NAME'
+ * Update plugin _VER on the line 32
+ * Update plugin _REMOTE_URL on the line 34
+ */
+$plugin_prefix = 'DPHOTSPOTBLOCK';
+
+define($plugin_prefix . '_DIR', plugin_basename(__DIR__));
+define($plugin_prefix . '_BASE', plugin_basename(__FILE__));
+define($plugin_prefix . '_PATH', plugin_dir_path(__FILE__));
+define($plugin_prefix . '_VER', '1.0.0');
+define($plugin_prefix . '_CACHE_KEY', 'dphotshpoblock-cache-key-for-plugin');
+define($plugin_prefix . '_REMOTE_URL', 'http://selfhost.dplugins.com/wp-content/uploads/plugins/8/info.json');
+
+require constant($plugin_prefix . '_PATH') . 'inc/update.php';
+
+new DPUpdateChecker(
+	constant($plugin_prefix . '_DIR'),
+	constant($plugin_prefix . '_VER'),
+	constant($plugin_prefix . '_CACHE_KEY'),
+	constant($plugin_prefix . '_REMOTE_URL'),
+	constant($plugin_prefix . '_BASE')
+);
+
+
+/**
  * Registers the block using the metadata loaded from the `block.json` file.
  * Behind the scenes, it registers also all assets so they can be enqueued
  * through the block editor in the corresponding context.
