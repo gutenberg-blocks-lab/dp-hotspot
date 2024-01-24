@@ -77,49 +77,49 @@ export default function Edit({ attributes, setAttributes }) {
   };
 
   return (
-    <>
-      <InspectorControls>
-        <PanelBody title={__("Position Settings", "dp-hotspot")}>
-          {hotspotNumbers.map((item, index) => (
-            <div key={index}>
-              <Flex>
-                <NumberControl
-                  label={__("Top (%)", "dp-hotspot")}
-                  value={item.top}
-                  onChange={(newTop) =>
-                    updateHotspotNumber(
-                      index,
-                      "top",
-                      newTop
-                    )
-                  }
-                />
-                <NumberControl
-                  label={__("Left (%)", "dp-hotspot")}
-                  value={item.left}
-                  onChange={(newLeft) =>
-                    updateHotspotNumber(
-                      index,
-                      "left",
-                      newLeft
-                    )
-                  }
-                />
-                <Button
-                  variant="tertiary"
-                  onClick={() => removeHotspotNumber(index)}
-                >
-                  Del
-                </Button>
-              </Flex>
-            </div>
-          ))}
-          <Button onClick={addHotspotNumber} variant="primary">
-            Add Hotspot
-          </Button>
-        </PanelBody>
-      </InspectorControls>
       <div {...useBlockProps()} ref={droppableRef}>
+        <InspectorControls>
+          <PanelBody title={__("Position Settings", "dp-hotspot")}>
+            {hotspotNumbers.map((item, index) => (
+              <div key={index}>
+                <Flex>
+                  <NumberControl
+                    label={__("Top (%)", "dp-hotspot")}
+                    value={item.top}
+                    onChange={(newTop) =>
+                      updateHotspotNumber(
+                        index,
+                        "top",
+                        newTop
+                      )
+                    }
+                  />
+                  <NumberControl
+                    label={__("Left (%)", "dp-hotspot")}
+                    value={item.left}
+                    onChange={(newLeft) =>
+                      updateHotspotNumber(
+                        index,
+                        "left",
+                        newLeft
+                      )
+                    }
+                  />
+                  <Button
+                    variant="tertiary"
+                    onClick={() => removeHotspotNumber(index)}
+                  >
+                    Del
+                  </Button>
+                </Flex>
+              </div>
+            ))}
+            <Button onClick={addHotspotNumber} variant="primary">
+              Add Hotspot
+            </Button>
+          </PanelBody>
+        </InspectorControls>
+
         <InnerBlocks />
 
         <DndContext onDragEnd={handleDragEnd}>
@@ -138,7 +138,7 @@ export default function Edit({ attributes, setAttributes }) {
             ))}
           </Droppable>
         </DndContext>
+        
       </div>
-    </>
   );
 }
