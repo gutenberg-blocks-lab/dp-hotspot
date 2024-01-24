@@ -5,8 +5,8 @@
 	"version": "0.1.0",
 	"title": "Hotspot",
 	"category": "widgets",
-	"icon": "smiley",
-	"description": "Example block scaffolded with Create Block tool.",
+	"icon": "marker",
+	"description": "Placehorder for images that can you ",
 	"example": {},
 	"supports": {
 		"html": true,
@@ -19,6 +19,10 @@
 		"hotspotNumbers": {
 			"type": "array",
 			"default": []
+		},
+		"startNumber": {
+			"type": "number",
+			"default": 1
 		}
 	},
 	"textdomain": "hotspot",
