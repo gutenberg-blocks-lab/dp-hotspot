@@ -3,7 +3,12 @@
 import { useBlockProps, InnerBlocks } from "@wordpress/block-editor";
 
 export default function save({ attributes }) {
-    const { hotspotNumbers } = attributes;
+    const {
+        hotspotNumbers,
+        hotspotBackgroundColor,
+        hotspotTextColor,
+        startNumber,
+    } = attributes;
 
     return (
         <div {...useBlockProps.save()}>
@@ -16,9 +21,11 @@ export default function save({ attributes }) {
                         position: "absolute",
                         top: `${hotspot.top}%`,
                         left: `${hotspot.left}%`,
+                        backgroundColor: hotspotBackgroundColor, // Apply the background color
+                        color: hotspotTextColor, // Apply the text color
                     }}
                 >
-                    {index + 1}
+                    {startNumber + index} {/* Use startNumber + index */}
                 </div>
             ))}
         </div>
