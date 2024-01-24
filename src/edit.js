@@ -1,212 +1,136 @@
 // Edit.js
 
-import React, { useRef } from "react";
-import {
-    useDroppable,
-    DndContext,
-    useDraggable,
-    closestCorners,
-    KeyboardSensor,
-    PointerSensor,
-    useSensor,
-    useSensors,
-} from "@dnd-kit/core";
-
-import {
-    SortableContext,
-    verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+import React from "react";
+import { DndContext } from "@dnd-kit/core";
 
 import { __ } from "@wordpress/i18n";
 import {
-    useBlockProps,
-    InspectorControls,
-    InnerBlocks,
+  useBlockProps,
+  InspectorControls,
+  InnerBlocks,
 } from "@wordpress/block-editor";
 import {
-    PanelBody,
-    __experimentalNumberControl as NumberControl,
-    Flex,
-    Button,
+  PanelBody,
+  __experimentalNumberControl as NumberControl,
+  Flex,
+  Button,
 } from "@wordpress/components";
 import "./editor.scss";
-
-function HotspotPoint({ id, style, containerRef }) {
-    // Convert percentage to pixels for initial position
-    let initialX = 0,
-        initialY = 0;
-    if (containerRef.current) {
-        const containerWidth = containerRef.current.offsetWidth;
-        const containerHeight = containerRef.current.offsetHeight;
-        initialX = (style.left.replace("%", "") / 100) * containerWidth;
-        initialY =
-            ((100 - style.bottom.replace("%", "")) / 100) * containerHeight;
-    }
-
-    const { attributes, listeners, setNodeRef, transform } = useDraggable({
-        id: id.toString(),
-        initialTransform: { x: initialX, y: initialY },
-    });
-
-    let finalStyle = style;
-    if (transform) {
-        const leftPercentage =
-            (transform.x / containerRef.current.offsetWidth) * 100;
-        const bottomFromTop =
-            (transform.y / containerRef.current.offsetHeight) * 100;
-        const bottomPercentage = 100 - bottomFromTop;
-
-        finalStyle = {
-            ...style,
-            left: `${leftPercentage}%`,
-            bottom: `${bottomPercentage}%`,
-        };
-    }
-
-    return (
-        <div
-            className="hotspotPoint"
-            ref={setNodeRef}
-            style={finalStyle}
-            {...attributes}
-            {...listeners}
-        >
-            {id + 1}
-        </div>
-    );
-}
-
-
+import { Droppable } from "./droppable";
+import { Draggable } from "./draggable";
 
 
 export default function Edit({ attributes, setAttributes }) {
-    const { hotspotNumbers } = attributes;
-    const sensors = useSensors(
-        useSensor(PointerSensor),
-        useSensor(KeyboardSensor)
-    );
+  const { hotspotNumbers } = attributes;
 
-    const handleDragEnd = (event) => {
-        const { active, delta } = event;
+  const handleDragEnd = (event) => {
+    const hotspot = hotspotNumbers.find((x) => x.id === event.active.id);
+    hotspot.position.x += event.delta.x;
+    hotspot.position.y += event.delta.y;
+    hotspot.left = `${hotspot.position.x}`;
+    hotspot.top = `${hotspot.position.y}`;
 
-        const activeIndex = hotspotNumbers.findIndex(
-            (hotspot) => hotspot.id === active.id
-        );
+    const _hotspotNumbers = hotspotNumbers.map((x) => {
+      if (x.id === hotspot.id) return hotspot;
+      return x;
+    });
 
-        if (containerRef.current) {
-            const containerWidth = containerRef.current.offsetWidth;
-            const containerHeight = containerRef.current.offsetHeight;
+    setAttributes({ hotspotNumbers: _hotspotNumbers });
+  };
 
-            const leftPercentage =
-                ((active.rect.current.translated.left + delta.x) /
-                    containerWidth) *
-                100;
-            const bottomPercentage =
-                100 -
-                ((active.rect.current.translated.top + delta.y) /
-                    containerHeight) *
-                    100;
-
-            // Update the hotspot position
-            updateHotspotNumber(activeIndex, "left", leftPercentage);
-            updateHotspotNumber(activeIndex, "bottom", bottomPercentage);
-        }
+  const addHotspotNumber = () => {
+    const newHotspotNumber = {
+      id: `${hotspotNumbers?.length + 1}`,
+      content: `${hotspotNumbers?.length + 1}`,
+      position: {
+        x: 0,
+        y: 0
+      },
+      left: 0,
+      top: 0
     };
+    setAttributes({
+      hotspotNumbers: [...hotspotNumbers, newHotspotNumber],
+    });
+  };
 
-
-
-    const addHotspotNumber = () => {
-        const newHotspotNumber = { bottom: 0, left: 0 };
-        setAttributes({
-            hotspotNumbers: [...hotspotNumbers, newHotspotNumber],
-        });
+  const updateHotspotNumber = (index, key, newValue) => {
+    const newHotspotNumbers = [...hotspotNumbers];
+    newHotspotNumbers[index] = {
+      ...newHotspotNumbers[index],
+      [key]: newValue,
     };
+    setAttributes({ hotspotNumbers: newHotspotNumbers });
+  };
 
-    const updateHotspotNumber = (index, key, newValue) => {
-        const newHotspotNumbers = [...hotspotNumbers];
-        newHotspotNumbers[index] = {
-            ...newHotspotNumbers[index],
-            [key]: newValue,
-        };
-        setAttributes({ hotspotNumbers: newHotspotNumbers });
-    };
+  const removeHotspotNumber = (index) => {
+    const updatedItems = hotspotNumbers.filter((_, i) => i !== index).map((obj, i) => ({ ...obj, id: `${i + 1}`, content: `${i + 1}` }));
+    setAttributes({ hotspotNumbers: updatedItems });
+  };
 
-    const removeHotspotNumber = (index) => {
-        const updatedItems = hotspotNumbers.filter((_, i) => i !== index);
-        setAttributes({ hotspotNumbers: updatedItems });
-    };
-    
-    const containerRef = useRef(null); // Ref for the container
-
-    return (
-        <>
-            <InspectorControls>
-                <PanelBody title={__("Position Settings", "dp-hotspot")}>
-                    {hotspotNumbers.map((item, index) => (
-                        <div key={index}>
-                            <Flex>
-                                <NumberControl
-                                    label={__("Bottom (%)", "dp-hotspot")}
-                                    value={item.bottom}
-                                    onChange={(newBottom) =>
-                                        updateHotspotNumber(
-                                            index,
-                                            "bottom",
-                                            newBottom
-                                        )
-                                    }
-                                />
-                                <NumberControl
-                                    label={__("Left (%)", "dp-hotspot")}
-                                    value={item.left}
-                                    onChange={(newLeft) =>
-                                        updateHotspotNumber(
-                                            index,
-                                            "left",
-                                            newLeft
-                                        )
-                                    }
-                                />
-                                <Button
-                                    variant="tertiary"
-                                    onClick={() => removeHotspotNumber(index)}
-                                >
-                                    Del
-                                </Button>
-                            </Flex>
-                        </div>
-                    ))}
-                    <Button onClick={addHotspotNumber} variant="primary">
-                        Add Hotspot
-                    </Button>
-                </PanelBody>
-            </InspectorControls>
-            <div {...useBlockProps()} ref={containerRef}>
-                <InnerBlocks />
-                <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCorners}
-                    onDragEnd={handleDragEnd}
+  return (
+    <>
+      <InspectorControls>
+        <PanelBody title={__("Position Settings", "dp-hotspot")}>
+          {hotspotNumbers.map((item, index) => (
+            <div key={index}>
+              <Flex>
+                <NumberControl
+                  label={__("Top (px)", "dp-hotspot")}
+                  value={item.top}
+                  onChange={(newTop) =>
+                    updateHotspotNumber(
+                      index,
+                      "top",
+                      newTop
+                    )
+                  }
+                />
+                <NumberControl
+                  label={__("Left (px)", "dp-hotspot")}
+                  value={item.left}
+                  onChange={(newLeft) =>
+                    updateHotspotNumber(
+                      index,
+                      "left",
+                      newLeft
+                    )
+                  }
+                />
+                <Button
+                  variant="tertiary"
+                  onClick={() => removeHotspotNumber(index)}
                 >
-                    <SortableContext
-                        items={hotspotNumbers}
-                        strategy={verticalListSortingStrategy}
-                    >
-                        {hotspotNumbers.map((hotspot, index) => (
-                            <HotspotPoint
-                                key={index}
-                                id={index}
-                                containerRef={containerRef} 
-                                style={{
-                                    position: "absolute",
-                                    bottom: `${hotspot.bottom}%`,
-                                    left: `${hotspot.left}%`,
-                                }}
-                            />
-                        ))}
-                    </SortableContext>
-                </DndContext>
+                  Del
+                </Button>
+              </Flex>
             </div>
-        </>
-    );
+          ))}
+          <Button onClick={addHotspotNumber} variant="primary">
+            Add Hotspot
+          </Button>
+        </PanelBody>
+      </InspectorControls>
+      <div {...useBlockProps()}>
+        <InnerBlocks />
+
+        <DndContext onDragEnd={handleDragEnd}>
+          <Droppable>
+            {hotspotNumbers.map((hotspot) => (
+              <Draggable
+                styles={{
+                  position: "absolute",
+                  top: `${hotspot.top}px`,
+                  left: `${hotspot.left}px`
+                }}
+                key={hotspot.id}
+                id={hotspot.id}
+                content={hotspot.content}
+              />
+            ))}
+          </Droppable>
+        </DndContext>
+      </div>
+    </>
+  );
 }
