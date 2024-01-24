@@ -35,11 +35,11 @@ jobs:
 
       - name: "Create a Release Archive"
         run: |
-          zip -r dp-lazy-load.zip .
+          zip -r dp-hotspot.zip .
 
       - name: "Create a GitHub Release"
         uses: softprops/action-gh-release@v1
         with:
-          files: dp-lazy-load.zip
+          files: dp-hotspot.zip
         env:
           GITHUB_TOKEN: ${{ secrets.WPSCIPTSTOKEN }}  # Ensure this token has the right permissions
