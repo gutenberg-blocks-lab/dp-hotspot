@@ -1,6 +1,6 @@
 // Edit.js
 
-import React from "react";
+import React, { useRef } from "react";
 import { DndContext } from "@dnd-kit/core";
 
 import { __ } from "@wordpress/i18n";
@@ -22,20 +22,28 @@ import { Draggable } from "./draggable";
 
 export default function Edit({ attributes, setAttributes }) {
   const { hotspotNumbers } = attributes;
+  const droppableRef = useRef(null);
 
   const handleDragEnd = (event) => {
     const hotspot = hotspotNumbers.find((x) => x.id === event.active.id);
+
     hotspot.position.x += event.delta.x;
     hotspot.position.y += event.delta.y;
-    hotspot.left = `${hotspot.position.x}`;
-    hotspot.top = `${hotspot.position.y}`;
 
-    const _hotspotNumbers = hotspotNumbers.map((x) => {
-      if (x.id === hotspot.id) return hotspot;
-      return x;
-    });
+    if (droppableRef?.current) {
+      const containerWidth = droppableRef.current.offsetWidth;
+      const containerHeight = droppableRef.current.offsetHeight;
 
-    setAttributes({ hotspotNumbers: _hotspotNumbers });
+      hotspot.left = `${(hotspot.position.x / containerWidth) * 100}`;
+      hotspot.top = `${(hotspot.position.y / containerHeight) * 100}`;
+
+      const _hotspotNumbers = hotspotNumbers.map((x) => {
+        if (x.id === hotspot.id) return hotspot;
+        return x;
+      });
+
+      setAttributes({ hotspotNumbers: _hotspotNumbers });
+    }
   };
 
   const addHotspotNumber = () => {
@@ -76,7 +84,7 @@ export default function Edit({ attributes, setAttributes }) {
             <div key={index}>
               <Flex>
                 <NumberControl
-                  label={__("Top (px)", "dp-hotspot")}
+                  label={__("Top (%)", "dp-hotspot")}
                   value={item.top}
                   onChange={(newTop) =>
                     updateHotspotNumber(
@@ -87,7 +95,7 @@ export default function Edit({ attributes, setAttributes }) {
                   }
                 />
                 <NumberControl
-                  label={__("Left (px)", "dp-hotspot")}
+                  label={__("Left (%)", "dp-hotspot")}
                   value={item.left}
                   onChange={(newLeft) =>
                     updateHotspotNumber(
@@ -111,7 +119,7 @@ export default function Edit({ attributes, setAttributes }) {
           </Button>
         </PanelBody>
       </InspectorControls>
-      <div {...useBlockProps()}>
+      <div {...useBlockProps()} ref={droppableRef}>
         <InnerBlocks />
 
         <DndContext onDragEnd={handleDragEnd}>
@@ -120,8 +128,8 @@ export default function Edit({ attributes, setAttributes }) {
               <Draggable
                 styles={{
                   position: "absolute",
-                  top: `${hotspot.top}px`,
-                  left: `${hotspot.left}px`
+                  top: `${hotspot.top}%`,
+                  left: `${hotspot.left}%`
                 }}
                 key={hotspot.id}
                 id={hotspot.id}
