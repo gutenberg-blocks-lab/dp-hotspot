@@ -14,8 +14,8 @@ export default function save({ attributes }) {
                     className="hotspotPoint"
                     style={{
                         position: "absolute",
-                        bottom: `${hotspot.bottom}%`,
-                        left: `${hotspot.left}%`,
+                        top: `${hotspot.top}px`,
+                        left: `${hotspot.left}px`,
                     }}
                 >
                     {index + 1}
