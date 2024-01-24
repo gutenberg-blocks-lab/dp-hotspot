@@ -13,7 +13,15 @@
 		"align": [
 			"wide",
 			"full"
-		]
+		],
+		"color": {
+			"text": true,
+			"background": true
+		},
+		"typography": {
+			"fontSize": true,
+			"fontFamily": true
+		}
 	},
 	"attributes": {
 		"hotspotNumbers": {
