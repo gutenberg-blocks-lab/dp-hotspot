@@ -6,7 +6,7 @@
 	"title": "Hotspot",
 	"category": "widgets",
 	"icon": "marker",
-	"description": "Placehorder for images that can you ",
+	"description": "Pinpoint images",
 	"example": {},
 	"supports": {
 		"html": true,

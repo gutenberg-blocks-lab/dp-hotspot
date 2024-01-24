@@ -48,8 +48,13 @@ export default function Edit({ attributes, setAttributes }) {
             const containerWidth = droppableRef.current.offsetWidth;
             const containerHeight = droppableRef.current.offsetHeight;
 
-            hotspot.left = `${(hotspot.position.x / containerWidth) * 100}`;
-            hotspot.top = `${(hotspot.position.y / containerHeight) * 100}`;
+            // Round the values to two decimal places
+            hotspot.left = parseFloat(
+                ((hotspot.position.x / containerWidth) * 100).toFixed(2)
+            );
+            hotspot.top = parseFloat(
+                ((hotspot.position.y / containerHeight) * 100).toFixed(2)
+            );
 
             const _hotspotNumbers = hotspotNumbers.map((x) => {
                 if (x.id === hotspot.id) return hotspot;
@@ -59,6 +64,7 @@ export default function Edit({ attributes, setAttributes }) {
             setAttributes({ hotspotNumbers: _hotspotNumbers });
         }
     };
+
 
     const addHotspotNumber = () => {
         const newHotspotNumber = {
