@@ -186,6 +186,8 @@ export default function Edit({ attributes, setAttributes }) {
                             key={hotspot.id}
                             id={hotspot.id}
                             content={hotspot.content}
+                            backgroundColor={hotspotBackgroundColor} // Pass the background color
+                            textColor={hotspotTextColor} // Pass the text color
                         />
                     ))}
                 </Droppable>

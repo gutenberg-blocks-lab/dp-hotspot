@@ -26,11 +26,11 @@
 		},
 		"hotspotBackgroundColor": {
 			"type": "string",
-			"default": "#D8613C"
+			"default": "#8d57fd"
 		},
 		"hotspotTextColor": {
 			"type": "string",
-			"default": "#FFF555"
+			"default": "#FFFFFF"
 		}
 	},
 	"textdomain": "hotspot",

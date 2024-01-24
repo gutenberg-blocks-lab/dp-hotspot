@@ -11,8 +11,8 @@ export function Draggable({ id, content, styles, backgroundColor, textColor }) {
         transform: transform
             ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
             : undefined,
-        backgroundColor: backgroundColor, // apply background color
-        color: textColor, // apply text color
+        backgroundColor, // Use the passed background color
+        color: textColor, // Use the passed text color
     };
 
     return (
@@ -27,3 +27,4 @@ export function Draggable({ id, content, styles, backgroundColor, textColor }) {
         </div>
     );
 }
+
