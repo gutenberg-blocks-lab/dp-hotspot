@@ -8,6 +8,7 @@ import {
     useBlockProps,
     InspectorControls,
     InnerBlocks,
+    PanelColorSettings,
 } from "@wordpress/block-editor";
 import {
     PanelBody,
@@ -20,8 +21,22 @@ import { Droppable } from "./droppable";
 import { Draggable } from "./draggable";
 
 export default function Edit({ attributes, setAttributes }) {
-    const { hotspotNumbers, startNumber } = attributes;
+    const {
+        hotspotNumbers,
+        startNumber,
+        hotspotBackgroundColor, // Add this line
+        hotspotTextColor, // Add this line
+    } = attributes;
+
     const droppableRef = useRef(null);
+
+    const onChangeHotspotBackgroundColor = (color) => {
+        setAttributes({ hotspotBackgroundColor: color });
+    };
+
+    const onChangeHotspotTextColor = (color) => {
+        setAttributes({ hotspotTextColor: color });
+    };
 
     const handleDragEnd = (event) => {
         const hotspot = hotspotNumbers.find((x) => x.id === event.active.id);
@@ -133,6 +148,21 @@ export default function Edit({ attributes, setAttributes }) {
                         Add Hotspot
                     </Button>
                 </PanelBody>
+                <PanelColorSettings
+                    title={__("Hotspot Colors")}
+                    colorSettings={[
+                        {
+                            value: hotspotBackgroundColor, // Now in scope
+                            onChange: onChangeHotspotBackgroundColor,
+                            label: __("Background Color"),
+                        },
+                        {
+                            value: hotspotTextColor, // Now in scope
+                            onChange: onChangeHotspotTextColor,
+                            label: __("Text Color"),
+                        },
+                    ]}
+                />
                 <PanelBody title={__("Hotspot order", "dp-hotspot")}>
                     <NumberControl
                         label={__("Starting Number", "dp-hotspot")}

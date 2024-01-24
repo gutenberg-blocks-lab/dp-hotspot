@@ -13,15 +13,7 @@
 		"align": [
 			"wide",
 			"full"
-		],
-		"color": {
-			"text": true,
-			"background": true
-		},
-		"typography": {
-			"fontSize": true,
-			"fontFamily": true
-		}
+		]
 	},
 	"attributes": {
 		"hotspotNumbers": {
@@ -31,6 +23,14 @@
 		"startNumber": {
 			"type": "number",
 			"default": 1
+		},
+		"hotspotBackgroundColor": {
+			"type": "string",
+			"default": "#D8613C"
+		},
+		"hotspotTextColor": {
+			"type": "string",
+			"default": "#FFF555"
 		}
 	},
 	"textdomain": "hotspot",
