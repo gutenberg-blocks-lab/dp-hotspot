@@ -4,7 +4,7 @@
  * Description:       Example block scaffolded with Create Block tool.
  * Requires at least: 6.1
  * Requires PHP:      7.0
- * Version:           1.0.0
+ * Version:           1.0.2
  * Author:            The WordPress Contributors
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -27,7 +27,7 @@ $plugin_prefix = 'DPHOTSPOTBLOCK';
 define($plugin_prefix . '_DIR', plugin_basename(__DIR__));
 define($plugin_prefix . '_BASE', plugin_basename(__FILE__));
 define($plugin_prefix . '_PATH', plugin_dir_path(__FILE__));
-define($plugin_prefix . '_VER', '1.0.1');
+define($plugin_prefix . '_VER', '1.0.2');
 define($plugin_prefix . '_CACHE_KEY', 'dphotshpoblock-cache-key-for-plugin');
 define($plugin_prefix . '_REMOTE_URL', 'http://selfhost.dplugins.com/wp-content/uploads/plugins/8/info.json');
 
