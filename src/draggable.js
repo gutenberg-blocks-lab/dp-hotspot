@@ -1,15 +1,6 @@
 import React from "react";
 import { useDraggable } from "@dnd-kit/core";
 
-const CustomStyle = {
-  display: "flex",
-  width: '50px',
-  height: '50px',
-  backgroundColor: 'lightblue',
-  borderRadius: '8px',
-  cursor: 'grab'
-};
-
 export function Draggable({ id, content, styles }) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id
@@ -22,13 +13,14 @@ export function Draggable({ id, content, styles }) {
     : {};
 
   return (
-    <div
-      ref={setNodeRef}
-      style={{ ...style, ...CustomStyle, ...styles }}
-      {...listeners}
-      {...attributes}
-    >
-      {content}
-    </div>
+      <div
+          ref={setNodeRef}
+          className="hotspotPoint"
+          style={{ ...style, ...styles }}
+          {...listeners}
+          {...attributes}
+      >
+          {content}
+      </div>
   );
 }

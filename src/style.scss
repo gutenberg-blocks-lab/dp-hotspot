@@ -6,17 +6,25 @@
  */
 
 .wp-block-create-block-hotspot {
-	position: relative !important;
+    position: relative !important;
 }
 
-.hotspotPoint{
-	background-color: rgb(194, 79, 255);
-	color: white;
-	border-radius: 1000px;
-	font-size: 1.2rem;
-	width: 3rem;
-	height: 3rem;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+.hotspotPoint {
+    background-color: rgb(194, 79, 255);
+    color: white;
+    border-radius: 1000px;
+    font-size: 1.2rem;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hotspotPoint:hover {
+    cursor: grab;
+}
+
+.hotspotPoint:hover:active {
+    cursor: grabbing;
 }
