@@ -113,7 +113,8 @@ export default function Edit({ attributes, setAttributes }) {
     };
 
     return (
-        <div {...useBlockProps()} ref={droppableRef}>
+        <div {...useBlockProps()}>
+          <div ref={droppableRef}>
             <InspectorControls>
                 <PanelBody title={__("Position Settings", "dp-hotspot")}>
                     {hotspotNumbers.map((item, index) => (
@@ -198,6 +199,7 @@ export default function Edit({ attributes, setAttributes }) {
                     ))}
                 </Droppable>
             </DndContext>
+          </div>
         </div>
     );
 }
